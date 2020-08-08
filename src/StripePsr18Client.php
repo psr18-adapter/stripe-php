@@ -37,7 +37,7 @@ class StripePsr18Client implements ClientInterface
      * @param string[] $params KV pairs for parameters. Can be nested for arrays and hashes
      * @param bool $hasFile Whether or not $params references a file (via an @ prefix or CurlFile)
      *
-     * @return array{0: string, 1: int, 2: array<string, string>}
+     * @return array{0: string, 1: int, 2: array<string, list<string>>}
      */
     public function request($method, $absUrl, $headers, $params, $hasFile): array
     {
