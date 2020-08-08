@@ -28,7 +28,7 @@ It's used like following, if you use YAML and `symfony/dependency-injection`
 ```yaml
 services:
     Stripe\StripeClient:
-      factory: ['Psr18Adapter\Stripe\StripeClientFactory', 'create']
+      factory: ['Psr18Adapter\Stripe\StripeClientAccessor', 'access']
       arguments:
         - !service
           class: Stripe\StripeClient
