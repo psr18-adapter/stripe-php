@@ -10,6 +10,7 @@ use Nyholm\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 use Psr18Adapter\Stripe\StripePsr18Client;
 use Stripe\ApiRequestor;
+use Stripe\ApiResponse;
 
 class StripePsrClientTest extends TestCase
 {
@@ -24,17 +25,24 @@ class StripePsrClientTest extends TestCase
             new StripePsr18Client($this->decoratedClient = new Client(), new Psr17Factory(), new Psr17Factory())
         );
         $this->requestor = new ApiRequestor('key');
-        $this->decoratedClient->addResponse(new Response(200, [], '{}'));
+        $this->decoratedClient->addResponse(new Response(200, ['baz' => 'quix'], '{}'));
     }
 
     public function testRequest(): void
     {
-        $this->requestor->request(
+        /** @var ApiResponse $response */
+        $response = $this->requestor->request(
             'post',
             '/oauth/token',
             ['code' => 'foo', 'grant_type' => 'bar'],
             ['Idempotency-Key' => 'foo']
-        );
+        )[0];
+
+        self::assertInstanceOf(ApiResponse::class, $response);
+        self::assertSame([], $response->json);
+        self::assertSame('{}', $response->body);
+        self::assertSame(200, $response->code);
+        self::assertSame(['baz' => ['quix']], $response->headers);
 
         $request = $this->decoratedClient->getLastRequest();
 
