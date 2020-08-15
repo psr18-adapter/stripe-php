@@ -38,12 +38,12 @@ class StripePsr18Client implements ClientInterface
      * @param string[] $params KV pairs for parameters. Can be nested for arrays and hashes
      * @param bool $hasFile Whether or not $params references a file (via an @ prefix or CurlFile)
      *
-     * @return array{0: string, 1: int, 2: array<string, list<string>>}
+     * @return array{0: string, 1: int, 2: array<string, string>}
      */
     public function request($method, $absUrl, $headers, $params, $hasFile): array
     {
         $response = $this->client->sendRequest(
-            $this->setNormalizedHeaders(
+            $this->withNormalizedHeaders(
                 $this->requestFactory->createRequest(
                     $method,
                     $this->uriFactory->createUri($absUrl)->withQuery(http_build_query($params))
@@ -52,13 +52,18 @@ class StripePsr18Client implements ClientInterface
             )
         );
 
-        return [$response->getBody()->__toString(), $response->getStatusCode(), $response->getHeaders()];
+        return [
+            $response->getBody()->__toString(),
+            $response->getStatusCode(),
+            // see https://github.com/stripe/stripe-php/issues/992
+            array_map('end', $response->getHeaders()),
+        ];
     }
 
     /**
      * @param list<string> $rawHeaders
      */
-    private function setNormalizedHeaders(RequestInterface $request, array $rawHeaders): RequestInterface
+    private function withNormalizedHeaders(RequestInterface $request, array $rawHeaders): RequestInterface
     {
         foreach ($rawHeaders as $header) {
             $key = strstr($header, ':', true);

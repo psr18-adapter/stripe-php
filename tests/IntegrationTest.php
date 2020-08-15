@@ -26,7 +26,7 @@ class IntegrationTest extends TestCase
         $this->stripeClient = new StripeClient($_SERVER['STRIPE_CLIENT_ID']);
     }
 
-    public function testGetAllCustomers()
+    public function testGetAllCustomers(): void
     {
         self::assertInstanceOf(Collection::class, $this->stripeClient->customers->all(['limit' => 1]));
     }

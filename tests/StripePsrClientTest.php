@@ -25,7 +25,7 @@ class StripePsrClientTest extends TestCase
             new StripePsr18Client($this->decoratedClient = new Client(), new Psr17Factory(), new Psr17Factory())
         );
         $this->requestor = new ApiRequestor('key');
-        $this->decoratedClient->addResponse(new Response(200, ['baz' => 'quix'], '{}'));
+        $this->decoratedClient->addResponse(new Response(200, ['baz' => ['quix', 'last']], '{}'));
     }
 
     public function testRequest(): void
@@ -42,7 +42,7 @@ class StripePsrClientTest extends TestCase
         self::assertSame([], $response->json);
         self::assertSame('{}', $response->body);
         self::assertSame(200, $response->code);
-        self::assertSame(['baz' => ['quix']], $response->headers);
+        self::assertSame(['baz' => 'last'], $response->headers);
 
         $request = $this->decoratedClient->getLastRequest();
 
