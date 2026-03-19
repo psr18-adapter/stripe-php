@@ -40,7 +40,7 @@ class StripePsr18Client implements ClientInterface
      *
      * @return array{0: string, 1: int, 2: array<string, string>}
      */
-    public function request($method, $absUrl, $headers, $params, $hasFile): array
+    public function request($method, $absUrl, $headers, $params, $hasFile, $apiMode = 'v1', $maxNetworkRetries = null): array
     {
         $response = $this->client->sendRequest(
             $this->withNormalizedHeaders(
@@ -56,7 +56,7 @@ class StripePsr18Client implements ClientInterface
             $response->getBody()->__toString(),
             $response->getStatusCode(),
             // see https://github.com/stripe/stripe-php/issues/992
-            array_map('end', $response->getHeaders()),
+            array_map(static fn (array $header) => end($header), $response->getHeaders()),
         ];
     }
 
