@@ -45,7 +45,7 @@ class StripePsr18Client implements ClientInterface
         $response = $this->client->sendRequest(
             $this->withNormalizedHeaders(
                 $this->requestFactory->createRequest(
-                    $method,
+                    strtoupper($method),
                     $this->uriFactory->createUri($absUrl)->withQuery(http_build_query($params))
                 ),
                 $headers
